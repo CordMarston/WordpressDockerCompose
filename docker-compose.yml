@@ -1,0 +1,39 @@
+version: "3.9"
+    
+services:
+  wordpressdb:
+    container_name: wordpressdb
+    image: mysql:5.7
+    volumes:
+      - wordpress_db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    networks:
+      - wordpress-network
+    
+  wordpress:
+    container_name: wordpress
+    depends_on:
+      - wordpressdb
+    image: wordpress:latest
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: wordpressdb
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      - wordpress-network
+networks:
+  wordpress-network:
+    driver: bridge
+volumes:
+  wordpress_db_data: {}
